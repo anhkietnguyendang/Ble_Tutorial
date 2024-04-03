@@ -1,12 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:new_ble_tutorial/ble_service.dart';
 import 'package:new_ble_tutorial/routes.dart';
 import 'package:new_ble_tutorial/splash.dart';
+import 'package:new_ble_tutorial/scan_screen_vm.dart';
 
 void main() {
   initServices();
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ScanScreenViewModel()),
+      ],
+      child: const MyApp())
+  );
 }
 
 initServices(){

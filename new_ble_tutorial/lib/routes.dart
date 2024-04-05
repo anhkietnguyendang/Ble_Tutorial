@@ -31,3 +31,17 @@ Route routeNotSupportedScreen({required bool slideEffect}){
       transitionsBuilder: transitionEffect
   );
 }
+
+Route routeConnect({required bool slideEffect}){
+  var transitionEffect = myFadeTransitionBuilder();
+  if(slideEffect){
+    transitionEffect = mySlideTransitionBuilder(const Offset(-1,0), Offset.zero);
+  }
+  else{
+    transitionEffect = myFadeTransitionBuilder();
+  }
+  return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => const BleNotSupported(),
+      transitionsBuilder: transitionEffect
+  );
+}

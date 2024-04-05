@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:new_ble_tutorial/ble_service.dart';
+import 'package:new_ble_tutorial/ble/ble_controller.dart';
 import 'package:new_ble_tutorial/routes.dart';
 import 'package:new_ble_tutorial/splash.dart';
 import 'package:new_ble_tutorial/scan_screen_vm.dart';
@@ -11,6 +11,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => BluetoothBleController()),
         ChangeNotifierProvider(create: (_) => ScanScreenViewModel()),
       ],
       child: const MyApp())
@@ -18,8 +19,8 @@ void main() {
 }
 
 initServices(){
-  BluetoothBleService();
-  BluetoothBleService().startService();
+  BluetoothBleController();
+  BluetoothBleController().startAdapterService();
 }
 
 class MyApp extends StatelessWidget {
@@ -61,12 +62,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    BluetoothBleController().stopScan();
+    BluetoothBleController().stopAdapterService();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return const SplashScreen();
   }
 
   void gotoNextPage(){
-    if (BluetoothBleService().isBluetoothSupported()) {
+    if (BluetoothBleController().isBluetoothSupported()) {
       Navigator.of(context).push(routeScanScreen(slideEffect: false));
     }
     else{

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:new_ble_tutorial/scan_screen_vm.dart';
+import 'package:provider/provider.dart';
+
+import 'ble/ble_device.dart';
+import 'ble_device_item.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -9,8 +14,12 @@ class ScanScreen extends StatefulWidget {
 
 class _ScanScreenState extends State<ScanScreen> {
   String title = 'BLE TUTORIAL';
+  late ScanScreenViewModel scanScreenVm;
+
   @override
   Widget build(BuildContext context) {
+    initViewModel();
+    String isOn = scanScreenVm.bluetoothIsOn ? 'ON' : 'OFF';
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -23,25 +32,36 @@ class _ScanScreenState extends State<ScanScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text('Bluetooth is: $isOn'),
               const Padding(padding: EdgeInsets.only(top: 10)),
 
               // Scan button
-              ScanButton(onPressed: (){}),
+              ScanButton(onPressed: scanButtonPressed),
               const Padding(padding: EdgeInsets.only(top: 10)),
 
               // Found device label
-              const FoundDevices(foundNumber: 0),
+              FoundDevices(foundNumber: scanScreenVm.foundDevices.length),
               const Padding(padding: EdgeInsets.only(top: 10)),
 
               // Found device list
-              const Expanded(
-                  child: DeviceListView(list: [])  // onTap: gotoDevice(index)
+              Expanded(
+                  child: DeviceListView(list: scanScreenVm.foundDevices)  // onTap: gotoDevice(index)
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void initViewModel(){
+    scanScreenVm = Provider.of<ScanScreenViewModel>(context);
+    scanScreenVm.context = context;
+    scanScreenVm.initViewModel();
+  }
+
+  void scanButtonPressed(){
+    scanScreenVm.scanButtonOnPressed();
   }
 }
 
@@ -105,7 +125,7 @@ class FoundDevices extends StatelessWidget{
 }
 
 class DeviceListView extends StatelessWidget{
-  final List<BluetoothDevice> list;
+  final List<BleDevice> list;
   const DeviceListView({super.key, required this.list});
 
   @override
@@ -123,63 +143,14 @@ class DeviceListView extends StatelessWidget{
           //padding: EdgeInsets.only(top: 10),
           itemCount: list.length,
           itemBuilder: (context, index){
-            return AlcBluetoothDeviceItem(
-                text: list[index].name,
-                itemId: list[index].id.toString(),
+            return AlcBleDeviceItem(
+                text: list[index].deviceName,
+                itemId: list[index].deviceId,
                 onTap: (){}// => Navigator.of(context).push(gotoDevice(index)),
             );
           },
         ),
       ),
-    );
-  }
-}
-
-// Bluetooth device
-class BluetoothDevice {
-  String name;
-  String id;
-
-  BluetoothDevice({required this.name, required this.id});
-}
-
-// Alinco Main Screen Setting List Item
-class AlcBluetoothDeviceItem extends StatelessWidget{
-
-  final String text;
-  final String itemId;
-  final GestureTapCallback onTap;
-  final IconData icon = Icons.arrow_forward_ios;
-
-  const AlcBluetoothDeviceItem({super.key, required this.text, required this.itemId, required this.onTap});
-
-  @override
-  Widget build(BuildContext context){
-    return Column(
-      children: <Widget>[
-        ListTile(
-          title: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          subtitle: Text(
-            itemId,
-            style: const TextStyle(
-                fontSize: 10,
-                fontStyle: FontStyle.italic,
-                color: Colors.black45
-            ),
-            softWrap: true,
-          ),
-          trailing: Icon(icon, size: 20, color: Colors.black,),
-          onTap: onTap,
-        ),
-        const Divider(height: 10,),
-      ],
     );
   }
 }

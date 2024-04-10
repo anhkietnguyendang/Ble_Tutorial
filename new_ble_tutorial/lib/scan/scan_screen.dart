@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:new_ble_tutorial/scan_screen_vm.dart';
+import 'package:new_ble_tutorial/scan/scan_screen_vm.dart';
 import 'package:provider/provider.dart';
 
-import 'ble/ble_device.dart';
-import 'ble_device_item.dart';
+import '../ble/ble_device.dart';
+import '../ble_device_item.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -45,7 +45,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
               // Found device list
               Expanded(
-                  child: DeviceListView(list: scanScreenVm.foundDevices)  // onTap: gotoDevice(index)
+                  child: DeviceListView(list: scanScreenVm.foundDevices, onTap: selectDevice,)  // onTap: gotoDevice(index)
               ),
             ],
           ),
@@ -62,6 +62,10 @@ class _ScanScreenState extends State<ScanScreen> {
 
   void scanButtonPressed(){
     scanScreenVm.scanButtonOnPressed();
+  }
+
+  void selectDevice(int index){
+    scanScreenVm.selectDevice(index);
   }
 }
 
@@ -126,7 +130,8 @@ class FoundDevices extends StatelessWidget{
 
 class DeviceListView extends StatelessWidget{
   final List<BleDevice> list;
-  const DeviceListView({super.key, required this.list});
+  final Function onTap;
+  const DeviceListView({super.key, required this.list, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +151,17 @@ class DeviceListView extends StatelessWidget{
             return AlcBleDeviceItem(
                 text: list[index].deviceName,
                 itemId: list[index].deviceId,
-                onTap: (){}// => Navigator.of(context).push(gotoDevice(index)),
+                onTap: (){
+                  selectedIndex(index);
+                } // => Navigator.of(context).push(gotoDevice(index)),
             );
           },
         ),
       ),
     );
+  }
+
+  void selectedIndex(int index){
+    onTap(index);
   }
 }

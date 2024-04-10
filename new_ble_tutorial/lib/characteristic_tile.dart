@@ -3,13 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'ble/ble_characteristic.dart';
-import "descriptor_tile.dart";
 
 class CharacteristicTile extends StatefulWidget {
   final BleCharacteristic characteristic;
-  final List<DescriptorTile> descriptorTiles;
+  // final List<DescriptorTile> descriptorTiles;
 
-  const CharacteristicTile({Key? key, required this.characteristic, required this.descriptorTiles}) : super(key: key);
+  const CharacteristicTile({super.key, required this.characteristic/*, required this.descriptorTiles*/});
 
   @override
   State<CharacteristicTile> createState() => _CharacteristicTileState();
@@ -54,7 +53,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
   }
 
   Future onWritePressed() async {
-    try {
+    /*try {
       await c.write(_getRandomBytes(), withoutResponse: c.properties.writeWithoutResponse);
       //Snackbar.show(ABC.c, "Write: Success", success: true);
       if (c.properties.read) {
@@ -62,11 +61,11 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
       }
     } catch (e) {
       //Snackbar.show(ABC.c, prettyException("Write Error:", e), success: false);
-    }
+    }*/
   }
 
   Future onSubscribePressed() async {
-    try {
+    /*try {
       String op = c.isNotifying == false ? "Subscribe" : "Unubscribe";
       await c.setNotifyValue(c.isNotifying == false);
       //Snackbar.show(ABC.c, "$op : Success", success: true);
@@ -78,22 +77,23 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
       }
     } catch (e) {
       //Snackbar.show(ABC.c, prettyException("Subscribe Error:", e), success: false);
-    }
+    }*/
   }
 
   Widget buildUuid(BuildContext context) {
-    String uuid = '0x${widget.characteristic.uuid.str.toUpperCase()}';
-    return Text(uuid, style: TextStyle(fontSize: 13));
+    //String uuid = '0x${widget.characteristic.uuid.str.toUpperCase()}';
+    String uuid = '0xXXXX';
+    return Text(uuid, style: const TextStyle(fontSize: 13));
   }
 
   Widget buildValue(BuildContext context) {
     String data = _value.toString();
-    return Text(data, style: TextStyle(fontSize: 13, color: Colors.grey));
+    return Text(data, style: const TextStyle(fontSize: 13, color: Colors.grey));
   }
 
   Widget buildReadButton(BuildContext context) {
     return TextButton(
-        child: Text("Read"),
+        child: const Text("Read"),
         onPressed: () async {
           await onReadPressed();
           if (mounted) {
@@ -103,7 +103,8 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
   }
 
   Widget buildWriteButton(BuildContext context) {
-    bool withoutResp = widget.characteristic.properties.writeWithoutResponse;
+    //bool withoutResp = widget.characteristic.properties.writeWithoutResponse;
+    bool withoutResp = true;
     return TextButton(
         child: Text(withoutResp ? "WriteNoResp" : "Write"),
         onPressed: () async {
@@ -115,7 +116,8 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
   }
 
   Widget buildSubscribeButton(BuildContext context) {
-    bool isNotifying = widget.characteristic.isNotifying;
+    //bool isNotifying = widget.characteristic.isNotifying;
+    bool isNotifying = true;
     return TextButton(
         child: Text(isNotifying ? "Unsubscribe" : "Subscribe"),
         onPressed: () async {
@@ -127,10 +129,14 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
   }
 
   Widget buildButtonRow(BuildContext context) {
-    bool read = widget.characteristic.properties.read;
+    /*bool read = widget.characteristic.properties.read;
     bool write = widget.characteristic.properties.write;
     bool notify = widget.characteristic.properties.notify;
-    bool indicate = widget.characteristic.properties.indicate;
+    bool indicate = widget.characteristic.properties.indicate;*/
+    bool read = true;
+    bool write = true;
+    bool notify = true;
+    bool indicate = true;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -157,7 +163,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
         subtitle: buildButtonRow(context),
         contentPadding: const EdgeInsets.all(0.0),
       ),
-      children: widget.descriptorTiles,
+      //children: widget.descriptorTiles,
     );
   }
 }

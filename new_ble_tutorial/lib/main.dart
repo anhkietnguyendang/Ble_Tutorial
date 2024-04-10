@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:new_ble_tutorial/device_screen_vm.dart';
 import 'package:provider/provider.dart';
 import 'package:new_ble_tutorial/ble/ble_controller.dart';
 import 'package:new_ble_tutorial/routes.dart';
 import 'package:new_ble_tutorial/splash.dart';
-import 'package:new_ble_tutorial/scan_screen_vm.dart';
+import 'package:new_ble_tutorial/scan/scan_screen_vm.dart';
 
 void main() {
   initServices();
@@ -13,6 +14,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => BluetoothBleController()),
         ChangeNotifierProvider(create: (_) => ScanScreenViewModel()),
+        ChangeNotifierProvider(create: (_) => DeviceScreenViewModel()),
       ],
       child: const MyApp())
   );

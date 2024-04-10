@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
+import 'ble/ble_characteristic.dart';
 import 'characteristic_tile.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +8,6 @@ import 'package:new_ble_tutorial/device_screen_vm.dart';
 import 'package:new_ble_tutorial/ble/ble_device.dart';
 
 import 'service_tile.dart';
-import 'descriptor_tile.dart';
 
 class DeviceScreen extends StatefulWidget {
 
@@ -29,17 +28,19 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   void dispose() {
     super.dispose();
+    deviceScreenVm.disconnectAndCancelSubscriptions();
   }
 
   @override
   Widget build(BuildContext context) {
     initViewModel();
-    String isConnected = deviceScreenVm.currentDevice.isConnected ? 'connected' : 'not connected';
+    String isConnected = deviceScreenVm.bleController.isConnected ? 'connected' : 'not connected';
+    //String isConnected = 'not connected';
     return ScaffoldMessenger(
       //key: Snackbar.snackBarKeyC,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(deviceScreenVm.currentDevice.deviceName),
+          title: Text(deviceScreenVm.currentDevice!.deviceName),
           actions: [buildConnectButton(context)],
         ),
         body: SingleChildScrollView(
@@ -47,12 +48,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
             children: <Widget>[
               buildRemoteId(context),
               ListTile(
-                leading: buildRssiTile(context),
+                //leading: buildRssiTile(context),
                 title: Text('Device is $isConnected'),
                 trailing: buildGetServices(context),
               ),
-              buildMtuTile(context),
-              ..._buildServiceTiles(context, deviceScreenVm.currentDevice),
+              //buildMtuTile(context),
+              ..._buildServiceTiles(),
             ],
           ),
         ),
@@ -66,37 +67,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
     deviceScreenVm.initViewModel();
   }
 
-  Future onConnectPressed() async {
-    /*try {
-      await widget.device.connectAndUpdateStream();
-      Snackbar.show(ABC.c, "Connect: Success", success: true);
-    } catch (e) {
-      if (e is FlutterBluePlusException && e.code == FbpErrorCode.connectionCanceled.index) {
-        // ignore connections canceled by the user
-      } else {
-        Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
-      }
-    }*/
-  }
-
-  Future onCancelPressed() async {
-    /*try {
-      await widget.device.disconnectAndUpdateStream(queue: false);
-      Snackbar.show(ABC.c, "Cancel: Success", success: true);
-    } catch (e) {
-      Snackbar.show(ABC.c, prettyException("Cancel Error:", e), success: false);
-    }*/
-  }
-
-  Future onDisconnectPressed() async {
-    /*try {
-      await widget.device.disconnectAndUpdateStream();
-      Snackbar.show(ABC.c, "Disconnect: Success", success: true);
-    } catch (e) {
-      Snackbar.show(ABC.c, prettyException("Disconnect Error:", e), success: false);
-    }*/
-  }
-
   Future onRequestMtuPressed() async {
     /*try {
       await widget.device.requestMtu(223, predelay: 0);
@@ -106,7 +76,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     }*/
   }
 
-  List<Widget> _buildServiceTiles(BuildContext context, BleDevice d) {
+  List<Widget> _buildServiceTiles() {
     return deviceScreenVm.services
         .map(
           (s) => ServiceTile(
@@ -117,10 +87,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
         .toList();
   }
 
-  CharacteristicTile _buildCharacteristicTile(BluetoothCharacteristic c) {
+  CharacteristicTile _buildCharacteristicTile(BleCharacteristic c) {
     return CharacteristicTile(
       characteristic: c,
-      descriptorTiles: c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
+      //descriptorTiles: c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
     );
   }
 
@@ -140,13 +110,13 @@ class _DeviceScreenState extends State<DeviceScreen> {
   Widget buildRemoteId(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Text(deviceScreenVm.currentDevice.deviceId),
+      child: Text(deviceScreenVm.currentDevice!.deviceId),
     );
   }
 
   Widget buildRssiTile(BuildContext context) {
-    bool isConnected = deviceScreenVm.currentDevice.isConnected;
-    int? rssi = deviceScreenVm.currentDevice.rssi as int?;
+    bool isConnected = deviceScreenVm.isConnected;
+    int? rssi = deviceScreenVm.bleController.rssi as int?;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -189,15 +159,38 @@ class _DeviceScreenState extends State<DeviceScreen> {
   }
 
   Widget buildConnectButton(BuildContext context) {
+    Function() onPressed = buildOnPressedForConnectButton;
+    String buttonText = buildTextForConnectButton();
     return Row(children: [
-      /*if (_isConnecting || _isDisconnecting) buildSpinner(context),
+      //if (deviceScreenVm.isConnecting || deviceScreenVm.isDisconnecting) buildSpinner(context),
       TextButton(
-          onPressed: _isConnecting ? onCancelPressed : (isConnected ? onDisconnectPressed : onConnectPressed),
-          child: Text(
-            _isConnecting ? "CANCEL" : (isConnected ? "DISCONNECT" : "CONNECT"),
-            style: Theme.of(context).primaryTextTheme.labelLarge?.copyWith(color: Colors.white),
-          ))*/
+          onPressed: deviceScreenVm.isConnected ? deviceScreenVm.onDisconnectPressed : deviceScreenVm.onConnectPressed,
+          child: Text(buttonText,
+            style: Theme.of(context).primaryTextTheme.labelLarge?.copyWith(color: Colors.black),
+          ))
     ]);
+  }
+
+  void Function() buildOnPressedForConnectButton(){
+    void Function() onPressed;
+    if (deviceScreenVm.isConnected){
+      onPressed = deviceScreenVm.onDisconnectPressed;
+    }
+    else{
+      onPressed = deviceScreenVm.onConnectPressed;
+    }
+    return onPressed;
+  }
+
+  String buildTextForConnectButton(){
+    String text ='';
+    if (deviceScreenVm.isConnected){
+      text = 'DISCONNECT';
+    }
+    else{
+      text = 'CONNECT';
+    }
+    return text;
   }
 
 }

@@ -1,47 +1,71 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:new_ble_tutorial/ble/ble_connection_state.dart';
+import 'package:new_ble_tutorial/ble/ble_service.dart';
 
-import 'ble_service.dart';
 
 class BleDevice {
-  BluetoothDevice? device;
+  BluetoothDevice device;
 
   BleDevice({required this.device});
 
   String get deviceName {
-    String name = '';
-    if(device != null) {
-      name = device!.advName;
-    }
-    return name;
+    return device.advName;
   }
 
   String get deviceId {
-    String id = '';
-    if(device != null) {
-      id = device!.remoteId.toString();
-    }
-    return id;
+    return device.remoteId.toString();
   }
 
   bool get isConnected {
-    bool isConnected = false;
-    if(device != null){
-      isConnected = device!.isConnected;
-    }
-    return isConnected;
+    return device.isConnected;
   }
 
-  Future<int>? get rssi => device?.readRssi();
-
-  Future<List<BleService>> discoverServices() async{
-    List<BleService> bleServices = [];
-    if(device != null){
-      List<BluetoothService> services = await device!.discoverServices();
-      for(BluetoothService s in services){
-        BleService sv = BleService(service: s);
-        bleServices.add(sv);
-      }
-    }
-    return bleServices;
+  bool get isDisconnected {
+    return device.isDisconnected;
   }
+
+  BleConnectionState get connectionState {
+    BleConnectionState state = BleConnectionState.disconnected;
+    if (device.connectionState == BluetoothConnectionState.connected){
+      state = BleConnectionState.connected;
+    }
+    return state;
+  }
+
+  int get mtuNow {
+    return device.mtuNow;
+  }
+
+  List<BleService> get serviceList {
+    List<BleService> myList = [];
+    List<BluetoothService> list = device.servicesList;
+    for(BluetoothService s in list){
+      BleService myService = BleService(service: s);
+      myList.add(myService);
+    }
+    return myList;
+  }
+
+  Future<void> connect({Duration timeout = const Duration(seconds: 35), int? mtu = 512, bool autoConnect = false}) async{
+    await device.connect(timeout: timeout, mtu: mtu, autoConnect: autoConnect);
+  }
+
+  Future<void> disconnect({int timeout = 35, bool queue = true}) async{
+    await device.disconnect(timeout: timeout, queue: queue);
+  }
+
+  Future<List<BleService>> discoverServices({bool subscribeToServicesChanged = true, int timeout = 15}) async{
+    List<BluetoothService> bluePlusServices = await device.discoverServices(subscribeToServicesChanged: subscribeToServicesChanged, timeout: timeout);
+    List<BleService> myList = [];
+    for(BluetoothService s in bluePlusServices){
+      BleService myService = BleService(service: s);
+      myList.add(myService);
+    }
+    return myList;
+  }
+
+  Future<int> readRssi ({int timeout = 15}) async{
+    return await device.readRssi(timeout: timeout);
+  }
+
 }

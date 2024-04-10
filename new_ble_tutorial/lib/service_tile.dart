@@ -10,7 +10,7 @@ class ServiceTile extends StatelessWidget {
 
   Widget buildUuid(BuildContext context) {
     String uuid = '0x${service.uuid}';
-    return Text(uuid, style: TextStyle(fontSize: 13));
+    return Text(uuid, style: const TextStyle(fontSize: 13));
   }
 
   @override
@@ -31,5 +31,6 @@ class ServiceTile extends StatelessWidget {
             title: const Text('Service'),
             subtitle: buildUuid(context),
           );
+
   }
 }

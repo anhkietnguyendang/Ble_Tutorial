@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:new_ble_tutorial/ble/ble_controller.dart';
-import 'package:new_ble_tutorial/routes.dart';
+import 'package:new_ble_tutorial/utils/routes.dart';
 import 'package:provider/provider.dart';
 
 import '../ble/ble_device.dart';
 
 class ScanScreenViewModel with ChangeNotifier{
   late BuildContext context;
-  bool bluetoothIsOn = false;
+  bool bluetoothIsAvailable = false;
   List<BleDevice> foundDevices = [];
 
   late BluetoothBleController bleController;
 
   void initViewModel(){
     bleController = Provider.of<BluetoothBleController>(context);
-    bluetoothIsOn = bleController.bluetoothIsOn;
+    bluetoothIsAvailable = bleController.bluetoothIsAvailable;
     foundDevices = bleController.foundDevices;
   }
 
   void scanButtonOnPressed(){
-    if(bluetoothIsOn){
+    if(bluetoothIsAvailable){
       if(bleController.isScanning){
         bleController.stopScan();
       }
@@ -27,7 +27,7 @@ class ScanScreenViewModel with ChangeNotifier{
       BluetoothBleController().startScan();
     }
     else{
-      print('Bluetooth is OFF');
+      print('Bluetooth is NOT AVAILABLE');
     }
   }
 

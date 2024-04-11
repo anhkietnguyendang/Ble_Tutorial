@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'ble/ble_service.dart';
-import "characteristic_tile.dart";
+import '../ble/ble_service.dart';
+import "../characteristic_tile/characteristic_tile.dart";
 
 class ServiceTile extends StatelessWidget {
   final BleService service;

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:new_ble_tutorial/device_screen_vm.dart';
+import 'package:new_ble_tutorial/descriptor_tile/descriptor_tile_vm.dart';
+import 'package:new_ble_tutorial/device_screen/device_screen_vm.dart';
 import 'package:provider/provider.dart';
 import 'package:new_ble_tutorial/ble/ble_controller.dart';
-import 'package:new_ble_tutorial/routes.dart';
+import 'package:new_ble_tutorial/utils/routes.dart';
 import 'package:new_ble_tutorial/splash.dart';
 import 'package:new_ble_tutorial/scan/scan_screen_vm.dart';
 
@@ -15,6 +16,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => BluetoothBleController()),
         ChangeNotifierProvider(create: (_) => ScanScreenViewModel()),
         ChangeNotifierProvider(create: (_) => DeviceScreenViewModel()),
+        ChangeNotifierProvider(create: (_) => DescriptorTileViewModel()),
       ],
       child: const MyApp())
   );
@@ -22,7 +24,7 @@ void main() {
 
 initServices(){
   BluetoothBleController();
-  BluetoothBleController().startAdapterService();
+  BluetoothBleController().startAdapterSubscriptions();
 }
 
 class MyApp extends StatelessWidget {
@@ -68,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement dispose
     super.dispose();
     BluetoothBleController().stopScan();
-    BluetoothBleController().stopAdapterService();
+    BluetoothBleController().stopAdapterSubscriptions();
   }
 
   @override

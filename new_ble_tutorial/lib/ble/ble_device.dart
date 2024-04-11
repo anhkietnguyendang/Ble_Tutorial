@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:new_ble_tutorial/ble/ble_connection_state.dart';
 import 'package:new_ble_tutorial/ble/ble_service.dart';
@@ -24,12 +26,20 @@ class BleDevice {
     return device.isDisconnected;
   }
 
-  BleConnectionState get connectionState {
+  /*BleConnectionState get connectionState {
     BleConnectionState state = BleConnectionState.disconnected;
     if (device.connectionState == BluetoothConnectionState.connected){
       state = BleConnectionState.connected;
     }
     return state;
+  }*/
+
+  Stream<BluetoothConnectionState> get connectionState {
+    return device.connectionState;
+  }
+
+  Stream<int> get mtu {
+    return device.mtu;
   }
 
   int get mtuNow {
@@ -44,6 +54,10 @@ class BleDevice {
       myList.add(myService);
     }
     return myList;
+  }
+
+  void cancelWhenDisconnected(StreamSubscription subscription, {bool next = false, bool delayed = false}){
+    device.cancelWhenDisconnected(subscription, next: next, delayed: delayed);
   }
 
   Future<void> connect({Duration timeout = const Duration(seconds: 35), int? mtu = 512, bool autoConnect = false}) async{

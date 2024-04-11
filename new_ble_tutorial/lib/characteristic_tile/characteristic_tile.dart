@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'ble/ble_characteristic.dart';
+import '../ble/ble_characteristic.dart';
+import '../descriptor_tile/descriptor_tile.dart';
 
 class CharacteristicTile extends StatefulWidget {
   final BleCharacteristic characteristic;
-  // final List<DescriptorTile> descriptorTiles;
+  final List<DescriptorTile> descriptorTiles;
 
-  const CharacteristicTile({super.key, required this.characteristic/*, required this.descriptorTiles*/});
+  const CharacteristicTile({super.key, required this.characteristic, required this.descriptorTiles});
 
   @override
   State<CharacteristicTile> createState() => _CharacteristicTileState();

@@ -3,7 +3,7 @@ import 'package:new_ble_tutorial/scan/scan_screen_vm.dart';
 import 'package:provider/provider.dart';
 
 import '../ble/ble_device.dart';
-import '../ble_device_item.dart';
+import '../widgets/ble_device_item.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -19,7 +19,7 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     initViewModel();
-    String isOn = scanScreenVm.bluetoothIsOn ? 'ON' : 'OFF';
+    String isOn = scanScreenVm.bluetoothIsAvailable ? 'AVAILABLE' : 'NOT AVAILABLE';
     return PopScope(
       canPop: false,
       child: Scaffold(

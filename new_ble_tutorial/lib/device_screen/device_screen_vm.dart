@@ -1,11 +1,10 @@
 import 'dart:async';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
 
 import 'package:new_ble_tutorial/ble/ble_device.dart';
 import 'package:new_ble_tutorial/ble/ble_service.dart';
-import 'package:provider/provider.dart';
-
-import 'ble/ble_controller.dart';
-import 'package:flutter/material.dart';
+import 'package:new_ble_tutorial/ble/ble_controller.dart';
 
 class DeviceScreenViewModel with ChangeNotifier {
   late BuildContext context;
@@ -21,7 +20,7 @@ class DeviceScreenViewModel with ChangeNotifier {
 
   void initViewModel(){
     bleController = Provider.of<BluetoothBleController>(context);
-    currentDevice = BleDevice(device: bleController.currentDevice!);
+    currentDevice = bleController.currentDevice!;
     bleController.startConnectionService();
   }
 

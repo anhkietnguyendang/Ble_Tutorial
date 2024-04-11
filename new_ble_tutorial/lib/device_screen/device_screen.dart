@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'ble/ble_characteristic.dart';
-import 'characteristic_tile.dart';
+import '../ble/ble_characteristic.dart';
+import '../characteristic_tile/characteristic_tile.dart';
 import 'package:provider/provider.dart';
 
-import 'package:new_ble_tutorial/device_screen_vm.dart';
+import 'package:new_ble_tutorial/device_screen/device_screen_vm.dart';
 import 'package:new_ble_tutorial/ble/ble_device.dart';
 
-import 'service_tile.dart';
+import '../descriptor_tile/descriptor_tile.dart';
+import '../service_tile/service_tile.dart';
 
 class DeviceScreen extends StatefulWidget {
 
@@ -90,7 +91,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   CharacteristicTile _buildCharacteristicTile(BleCharacteristic c) {
     return CharacteristicTile(
       characteristic: c,
-      //descriptorTiles: c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
+      descriptorTiles: c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
     );
   }
 

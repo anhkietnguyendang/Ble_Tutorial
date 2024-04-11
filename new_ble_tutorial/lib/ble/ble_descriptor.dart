@@ -16,6 +16,10 @@ class BleDescriptor {
     return descriptor.lastValue;
   }
 
+  Stream<List<int>> get lastValueStream {
+    return descriptor.lastValueStream;
+  }
+
   Stream<List<int>> get onValueReceived {
     return descriptor.onValueReceived;
   }

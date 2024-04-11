@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_ble_tutorial/ble_not_supported.dart';
-import 'package:new_ble_tutorial/device_screen.dart';
+import 'package:new_ble_tutorial/device_screen/device_screen.dart';
 import 'package:new_ble_tutorial/scan/scan_screen.dart';
 
 import 'functions.dart';

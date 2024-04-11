@@ -20,14 +20,14 @@ class BluetoothBleController with ChangeNotifier{
   bool _bluetoothIsSupported = false;
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
   List<BluetoothDevice> _systemDevices = [];
-  List<ScanResult> _scanResults = [];
+  // List<ScanResult> _scanResults = [];
 
-  bool bluetoothIsOn = false;
+  bool bluetoothIsAvailable = false;
   bool isScanning = false;
   List<BleDevice> foundDevices = [];
-  BluetoothDevice? currentDevice;
+  BleDevice? currentDevice;
 
-  void startAdapterService() async{
+  void startAdapterSubscriptions() async{
     _bluetoothIsSupported = await FlutterBluePlus.isSupported;
     if(_bluetoothIsSupported) {
       _adapterStateStateSubscription =
@@ -49,7 +49,7 @@ class BluetoothBleController with ChangeNotifier{
     }
   }
 
-  void stopAdapterService(){
+  void stopAdapterSubscriptions(){
     _adapterStateStateSubscription.cancel();
     _scanResultsSubscription.cancel();
     _isScanningSubscription.cancel();
@@ -58,32 +58,25 @@ class BluetoothBleController with ChangeNotifier{
   void updateBluetoothState(BluetoothAdapterState state){
     _adapterState = state;
     if(_adapterState == BluetoothAdapterState.on){
-      bluetoothIsOn = true;
+      bluetoothIsAvailable = true;
     }
     else{
-      bluetoothIsOn = false;
+      bluetoothIsAvailable = false;
     }
     notifyListeners();
   }
 
   void updateDeviceList(List<ScanResult> results){
-    for (ScanResult r in results){
-      final String name = r.device.advName;
-      //if(name.startsWith('AL')){
-        final bool isInList = isAlreadyInList(name);
-        if (!isInList){
-          final BleDevice d = BleDevice(device: r.device);
-          foundDevices.add(d);
-          _scanResults.add(r);
-        }
-      //}
+    for(ScanResult r in results){
+      final BleDevice d = BleDevice(device: r.device);
+      if(!foundDevices.contains(d)){
+        foundDevices.add(d);
+        // _scanResults.add(r);
+      }
     }
+
     notifyListeners();
   }
-
-  /*bool isAlincoDevice(BleDevice device){
-    return device.deviceName.toString().startsWith('AL');
-  }*/
 
   bool isAlreadyInList(String name){
     bool alreadyIn = false;
@@ -104,12 +97,12 @@ class BluetoothBleController with ChangeNotifier{
   }
 
   void setCurrentDevice(int index){
-    currentDevice = _scanResults[index].device;
+    currentDevice = foundDevices[index];
   }
 
   Future<void> startScan() async{
     foundDevices = [];
-    _scanResults = [];
+    // _scanResults = [];
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
     } catch (e) {
@@ -132,14 +125,14 @@ class BluetoothBleController with ChangeNotifier{
 
   // endregion Adapter and Scan
 
-  // region ConnectD disconnect, services, characteristics
+  // region Connect, Disconnect, Get services
   late StreamSubscription<BluetoothConnectionState> _connectionStateSubscription;
   late StreamSubscription<int> _mtuSubscription;
 
   Future<int>? rssi;
   int? mtuSize;
 
-  List<BluetoothService> _services = [];
+  List<BleService> services = [];
   bool isConnected = false;
 
   void startConnectionService(){
@@ -181,10 +174,8 @@ class BluetoothBleController with ChangeNotifier{
   }
 
   void updateMtuSize(int value){
-    /*_mtuSize = value;
-    if (mounted) {
-      setState(() {});
-    }*/
+    mtuSize = value;
+    notifyListeners();
   }
 
   Future<bool> connectBle() async{
@@ -223,12 +214,17 @@ class BluetoothBleController with ChangeNotifier{
   Future<List<BleService>> discoverServices() async{
     List<BleService> services = [];
     if(currentDevice != null) {
-      _services = await currentDevice!.discoverServices();
-      for (BluetoothService s in _services) {
-        BleService myService = BleService(service: s);
-        services.add(myService);
-      }
+      services = await currentDevice!.discoverServices();
     }
+    notifyListeners();
     return services;
   }
+
+  // endregion Connect, Disconnect, Get services
+
+  // region Characteristics
+
+
+  // endregion Characteristics
+
 }

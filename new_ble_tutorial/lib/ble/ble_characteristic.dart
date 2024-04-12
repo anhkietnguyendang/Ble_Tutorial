@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:new_ble_tutorial/ble/ble_device.dart';
+import 'ble_characteristic_properties.dart';
 import 'ble_descriptor.dart';
 
 
 class BleCharacteristic with ChangeNotifier{
   BluetoothCharacteristic characteristic;
-
   BleCharacteristic({required this.characteristic});
 
   List<BleDescriptor> get descriptors {
@@ -22,6 +22,10 @@ class BleCharacteristic with ChangeNotifier{
   BleDevice get device {
     BluetoothDevice d = characteristic.device;
     return BleDevice(device: d);
+  }
+
+  BleCharacteristicProperties get properties {
+    return BleCharacteristicProperties(characteristic: characteristic);
   }
 
   bool get isNotifying {
@@ -52,9 +56,6 @@ class BleCharacteristic with ChangeNotifier{
     return await characteristic.setNotifyValue(notify, timeout: timeout, forceIndications: forceIndications);
   }
 
-  void startCharacteristicSubscriptions() {
-
-  }
-
 }
+
 

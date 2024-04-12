@@ -82,7 +82,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
         .map(
           (s) => ServiceTile(
             service: s,
-            characteristicTiles: s.characteristics.map((c) => _buildCharacteristicTile(c)).toList(),
+            // characteristicTiles: s.characteristics.map((c) => _buildCharacteristicTile(c)).toList(),
           ),
         )
         .toList();
@@ -91,7 +91,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   CharacteristicTile _buildCharacteristicTile(BleCharacteristic c) {
     return CharacteristicTile(
       characteristic: c,
-      descriptorTiles: c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
+      // descriptorTiles: c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
     );
   }
 

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:new_ble_tutorial/characteristic_tile/characteristic_tile.dart';
+import 'package:new_ble_tutorial/characteristic_tile/characteristic_tile_vm.dart';
 import 'package:new_ble_tutorial/descriptor_tile/descriptor_tile_vm.dart';
 import 'package:new_ble_tutorial/device_screen/device_screen_vm.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => BluetoothBleController()),
         ChangeNotifierProvider(create: (_) => ScanScreenViewModel()),
         ChangeNotifierProvider(create: (_) => DeviceScreenViewModel()),
+        ChangeNotifierProvider(create: (_) => CharacteristicTileViewModel()),
         ChangeNotifierProvider(create: (_) => DescriptorTileViewModel()),
       ],
       child: const MyApp())

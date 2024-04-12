@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:new_ble_tutorial/characteristic_tile/characteristic_tile_vm.dart';
+import 'package:new_ble_tutorial/service_tile/service_tile_vm.dart';
+import 'package:provider/provider.dart';
 import '../ble/ble_service.dart';
 import "../characteristic_tile/characteristic_tile.dart";
 
 class ServiceTile extends StatelessWidget {
+  late ServiceTileViewModel serviceTileVm;
+  // late List<CharacteristicTile> characteristicTiles;
   final BleService service;
-  final List<CharacteristicTile> characteristicTiles;
+  late CharacteristicTileViewModel characteristicTileVm;
 
-  const ServiceTile({super.key, required this.service, required this.characteristicTiles});
+  ServiceTile({super.key, required this.service});
 
   Widget buildUuid(BuildContext context) {
     String uuid = '0x${service.uuid}';
@@ -15,7 +20,8 @@ class ServiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return characteristicTiles.isNotEmpty
+    initViewModel(context);
+    return service.characteristics.isNotEmpty
         ? ExpansionTile(
             title: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -25,7 +31,7 @@ class ServiceTile extends StatelessWidget {
                 buildUuid(context),
               ],
             ),
-            children: characteristicTiles,
+            children: serviceTileVm.characteristicTiles,
           )
         : ListTile(
             title: const Text('Service'),
@@ -33,4 +39,13 @@ class ServiceTile extends StatelessWidget {
           );
 
   }
+
+  void initViewModel(BuildContext context) {
+    serviceTileVm = Provider.of<ServiceTileViewModel>(context);
+    serviceTileVm.context = context;
+    serviceTileVm.setService(service);
+  }
+
+
+
 }

@@ -22,6 +22,7 @@ class _DescriptorTileState extends State<DescriptorTile> {
 
   @override
   void dispose() {
+    descriptorTileVm.stopSubscriptions();
     super.dispose();
   }
 
